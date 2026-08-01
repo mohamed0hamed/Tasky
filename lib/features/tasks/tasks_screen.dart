@@ -3,26 +3,26 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:tasky_app/core/services/preference_manager.dart';
 import 'package:tasky_app/models/task_model.dart';
-import 'package:tasky_app/widgets/task_list_widget.dart';
+import 'package:tasky_app/core/components/task_list_widget.dart';
 
-class CompletedTasksScreen extends StatefulWidget {
-  const CompletedTasksScreen({super.key});
+class TasksScreen extends StatefulWidget {
+  const TasksScreen({super.key});
 
   @override
-  State<CompletedTasksScreen> createState() => _CompletedTasksScreenState();
+  State<TasksScreen> createState() => _TasksScreenState();
 }
 
-class _CompletedTasksScreenState extends State<CompletedTasksScreen> {
-  List<TaskModel> completedTasks = [];
+class _TasksScreenState extends State<TasksScreen> {
+  List<TaskModel> toDoTasks = [];
   bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _getTasksCompleted();
+    _getTasksNotCompleted();
   }
 
-  Future<void> _getTasksCompleted() async {
+  Future<void> _getTasksNotCompleted() async {
     setState(() {
       isLoading = true;
     });
@@ -32,9 +32,9 @@ class _CompletedTasksScreenState extends State<CompletedTasksScreen> {
       final taskAfterDecode = jsonDecode(allTasks) as List<dynamic>;
 
       setState(() {
-        completedTasks = taskAfterDecode
+        toDoTasks = taskAfterDecode
             .map((taskJson) => TaskModel.fromJson(taskJson))
-            .where((taskJson) => taskJson.isCompleted)
+            .where((taskJson) => !taskJson.isCompleted)
             .toList();
       });
     }
@@ -44,19 +44,20 @@ class _CompletedTasksScreenState extends State<CompletedTasksScreen> {
     });
   }
 
+
    Future<void> _deleteTask(int? id) async {
     if(id == null)return;
-    List<TaskModel> tasks = [];
 
-     final allTasks = PreferenceManager().getString('tasks');
+    List<TaskModel> tasks = [];
+    final allTasks = PreferenceManager().getString('tasks');
     if (allTasks != null) {
       final taskAfterDecode = jsonDecode(allTasks) as List<dynamic>;
-      tasks = taskAfterDecode.map((e) => TaskModel.fromJson(e),).toList();
-      tasks.removeWhere((e)=>e.id == id);
+      tasks = taskAfterDecode.map((e)=> TaskModel.fromJson(e)).toList();
+      tasks.removeWhere((e)=> e.id == id);
       }
-
     setState(() {
-      completedTasks.removeWhere(((element) => element.id == id));
+      toDoTasks.removeWhere(((element) => element.id == id));
+     
     });
 
     final updatedTask = tasks.map((task) => task.toMap()).toList();
@@ -70,10 +71,10 @@ class _CompletedTasksScreenState extends State<CompletedTasksScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.all(18.0),
+          padding: const EdgeInsets.all(18),
           child: Text(
-            'Completed Tasks',
-            style:Theme.of(context).textTheme.labelSmall
+            "To Do Tasks",
+            style: Theme.of(context).textTheme.labelSmall
           ),
         ),
         Expanded(
@@ -84,16 +85,17 @@ class _CompletedTasksScreenState extends State<CompletedTasksScreen> {
                     child: CircularProgressIndicator(color: Color(0xff15B86C)),
                   )
                 : TaskListWidget(
-                  onEdit: () => _getTasksCompleted(),
+                  onEdit: () => _getTasksNotCompleted(),
                   onDelete: (id) {
                     _deleteTask(id);
                   },
                     emptyMassage: 'No Tasks Found',
-                    tasks: completedTasks,
+                    tasks: toDoTasks,
                     onTap: (value, index) async {
                       setState(() {
-                        completedTasks[index!].isCompleted = value ?? false;
+                        toDoTasks[index!].isCompleted = value ?? false;
                       });
+
                       // this make big problem
                       // final prefs = await SharedPreferences.getInstance();
                       // final upDateTasks = completedTasks.map((element)=> element.toMap) .toList();
@@ -101,7 +103,7 @@ class _CompletedTasksScreenState extends State<CompletedTasksScreen> {
                       // _getTasksCompleted();
 
                       // solve the problem
-
+                      
                       final allData = PreferenceManager().getString('tasks');
                       if (allData != null) {
                         List<TaskModel> allDataList =
@@ -109,16 +111,16 @@ class _CompletedTasksScreenState extends State<CompletedTasksScreen> {
                                 .map((element) => TaskModel.fromJson(element))
                                 .toList();
                         final newIndex = allDataList.indexWhere(
-                          (e) => e.id == completedTasks[index!].id,
+                          (e) => e.id == toDoTasks[index!].id,
                         );
-                        allDataList[newIndex] = completedTasks[index!];
+                        allDataList[newIndex] = toDoTasks[index!];
                         await PreferenceManager().setString(
                           'tasks',
                           jsonEncode(
                             allDataList.map((task) => task.toMap()).toList(),
                           ),
                         );
-                        _getTasksCompleted();
+                        _getTasksNotCompleted();
                       }
                     },
                   ),
