@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:tasky_app/core/constance/storage_key.dart';
 import 'package:tasky_app/core/services/preference_manager.dart';
 import 'package:tasky_app/models/task_model.dart';
 import 'package:tasky_app/core/components/task_list_widget.dart';
@@ -27,7 +28,7 @@ class _TasksScreenState extends State<TasksScreen> {
       isLoading = true;
     });
     
-    final allTasks = PreferenceManager().getString('tasks');
+    final allTasks = PreferenceManager().getString(StorageKey.tasks);
     if (allTasks != null) {
       final taskAfterDecode = jsonDecode(allTasks) as List<dynamic>;
 
@@ -49,7 +50,7 @@ class _TasksScreenState extends State<TasksScreen> {
     if(id == null)return;
 
     List<TaskModel> tasks = [];
-    final allTasks = PreferenceManager().getString('tasks');
+    final allTasks = PreferenceManager().getString(StorageKey.tasks);
     if (allTasks != null) {
       final taskAfterDecode = jsonDecode(allTasks) as List<dynamic>;
       tasks = taskAfterDecode.map((e)=> TaskModel.fromJson(e)).toList();
@@ -61,7 +62,7 @@ class _TasksScreenState extends State<TasksScreen> {
     });
 
     final updatedTask = tasks.map((task) => task.toMap()).toList();
-    await PreferenceManager().setString('tasks', jsonEncode(updatedTask));
+    await PreferenceManager().setString(StorageKey.tasks, jsonEncode(updatedTask));
   }
 
 
@@ -104,7 +105,7 @@ class _TasksScreenState extends State<TasksScreen> {
 
                       // solve the problem
                       
-                      final allData = PreferenceManager().getString('tasks');
+                      final allData = PreferenceManager().getString(StorageKey.tasks);
                       if (allData != null) {
                         List<TaskModel> allDataList =
                             (jsonDecode(allData) as List)
@@ -115,7 +116,7 @@ class _TasksScreenState extends State<TasksScreen> {
                         );
                         allDataList[newIndex] = toDoTasks[index!];
                         await PreferenceManager().setString(
-                          'tasks',
+                          StorageKey.tasks,
                           jsonEncode(
                             allDataList.map((task) => task.toMap()).toList(),
                           ),

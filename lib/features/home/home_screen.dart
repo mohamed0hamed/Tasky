@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:tasky_app/core/constance/storage_key.dart';
 import 'package:tasky_app/core/services/preference_manager.dart';
 import 'package:tasky_app/core/widgets/custom_svg_picture_widget.dart';
 import 'package:tasky_app/models/task_model.dart';
@@ -33,8 +34,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _getFullName() async {
     setState(() {
-      fullName = PreferenceManager().getString('fullName') ?? 'Guest';
-      userIamge = PreferenceManager().getString('user_image');
+      fullName = PreferenceManager().getString(StorageKey.userName) ?? 'Guest';
+      userIamge = PreferenceManager().getString(StorageKey.userImage);
     });
   }
 
@@ -44,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
     // await Future.delayed(Duration(seconds: 2));
 
-    final finalTask = PreferenceManager().getString('tasks');
+    final finalTask = PreferenceManager().getString(StorageKey.tasks);
     if (finalTask != null) {
       final taskAfterDecode = jsonDecode(finalTask) as List<dynamic>;
 
@@ -74,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     final updatedTask = tasks.map((task) => task.toMap()).toList();
-    await PreferenceManager().setString('tasks', jsonEncode(updatedTask));
+    await PreferenceManager().setString(StorageKey.tasks, jsonEncode(updatedTask));
   }
 
   Future<void> _deleteTask(int? id) async {
@@ -85,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     final updatedTask = tasks.map((task) => task.toMap()).toList();
-    await PreferenceManager().setString('tasks', jsonEncode(updatedTask));
+    await PreferenceManager().setString(StorageKey.tasks, jsonEncode(updatedTask));
   }
 
   @override

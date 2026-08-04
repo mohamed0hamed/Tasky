@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:tasky_app/core/constance/storage_key.dart';
 import 'package:tasky_app/core/services/preference_manager.dart';
 import 'package:tasky_app/core/theme/theme_controller.dart';
 import 'package:tasky_app/core/widgets/custom_svg_picture_widget.dart';
@@ -31,11 +32,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _getFullNameAndMotivationQuoteAndIamge() async {
     setState(() {
-      fullName = PreferenceManager().getString('fullName') ?? 'guest';
+      fullName = PreferenceManager().getString(StorageKey.userName) ?? 'guest';
       motivationQuote =
           PreferenceManager().getString('motivation_quote') ??
           'One task at a time. One step closer.';
-      userImagePath = PreferenceManager().getString('user_image');
+      userImagePath = PreferenceManager().getString(StorageKey.userImage);
     });
   }
 
@@ -171,9 +172,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           ListTile(
             onTap: () async {
-              PreferenceManager().remove('tasks');
-              PreferenceManager().remove('fullName');
-              PreferenceManager().remove('motivation_quote');
+              PreferenceManager().remove(StorageKey.tasks);
+              PreferenceManager().remove(StorageKey.userName);
+              PreferenceManager().remove(StorageKey.motivationQuote);
 
               Navigator.pushAndRemoveUntil(
                 context,
@@ -205,7 +206,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   {
     final appDir = await getApplicationDocumentsDirectory();
     final newFile = await File(file.path).copy("${appDir.path}/${file.name}");
-    PreferenceManager().setString('user_image', newFile.path);
+    PreferenceManager().setString(StorageKey.userImage, newFile.path);
   }
 
   _showImageSourceDialog(BuildContext context, {required Function(XFile) selectedFile}) {

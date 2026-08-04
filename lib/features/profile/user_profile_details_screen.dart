@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tasky_app/core/constance/storage_key.dart';
 import 'package:tasky_app/core/services/preference_manager.dart';
 import 'package:tasky_app/core/widgets/custom_text_form_filed.dart';
 
@@ -74,8 +75,8 @@ void initState() {
                 onPressed: ()async {
                   if(_formKey.currentState?.validate() ?? false){
                 
-                  await PreferenceManager().setString('fullName', userNameController.text);
-                  await PreferenceManager().setString('motivation_quote', motivationQuoteController.text);
+                  await PreferenceManager().setString(StorageKey.userName, userNameController.text);
+                  await PreferenceManager().setString(StorageKey.motivationQuote, motivationQuoteController.text);
 
                   Navigator.of(context).pop(true);
 
