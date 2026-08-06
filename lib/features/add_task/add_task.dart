@@ -13,7 +13,7 @@ class AddTask extends StatefulWidget {
 class _AddTaskState extends State<AddTask> {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
+    return ChangeNotifierProvider<AddTaskController>(
       create: (_) => AddTaskController(),
       builder: (context, _) {
         final controller = context.read<AddTaskController>();

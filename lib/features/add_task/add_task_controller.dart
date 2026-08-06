@@ -42,5 +42,6 @@ class AddTaskController with ChangeNotifier {
 
  void  toggle(bool value){
     isHighPriority = value;
+    notifyListeners();
   }
 }
