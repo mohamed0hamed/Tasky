@@ -1,22 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:tasky_app/models/task_model.dart';
+import 'package:provider/provider.dart';
+import 'package:tasky_app/features/home/home_controller.dart';
 import 'package:tasky_app/core/components/task_item_widget.dart';
 
 class SliverTaskListWidget extends StatelessWidget {
   const SliverTaskListWidget({
     super.key,
-    required this.tasks,
-    required this.onTap,
-    required this.emptyMassage, required this.onDelete, required this.onEdit,
+    
+    required this.emptyMassage,
+    
   });
-  final List<TaskModel> tasks;
-  final Function(bool?, int?) onTap;
-  final Function (int?) onDelete;
-   final Function onEdit ;
+ 
   final String emptyMassage;
   @override
   Widget build(BuildContext context) {
-    return tasks.isEmpty
+    return Consumer<HomeController>
+    (
+      builder:(context, controller, child) {
+        return controller.isLoading
+        ? SliverToBoxAdapter(
+            child: Center(
+              child: CircularProgressIndicator(color: Color(0xff15B86C)),
+            ),
+          )
+        : controller.tasks.isEmpty
         ? SliverToBoxAdapter(
             child: Center(
               child: Text(
@@ -28,25 +35,28 @@ class SliverTaskListWidget extends StatelessWidget {
         : SliverPadding(
             padding: EdgeInsetsGeometry.only(bottom: 60),
             sliver: SliverList.separated(
-              itemCount: tasks.length,
+              itemCount: controller.tasks.length,
               separatorBuilder: (context, index) {
                 return SizedBox(height: 8);
               },
               itemBuilder: (context, index) {
                 return TaskItemWidget(
                   onEdit: () {
-                    onEdit();
+                  controller.getTasks();
                   },
-                  onDelete: (id){
-                    onDelete(id);
+                  onDelete: (id) {
+                    controller.deleteTask(id);
                   },
-                  model: tasks[index],
+                  model: controller.tasks[index],
                   onChanged: (value) {
-                    onTap(value, index);
+                    controller.doneTask(index, value);
                   },
                 );
               },
             ),
           );
+      },
+    
+     );
   }
 }

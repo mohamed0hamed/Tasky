@@ -13,16 +13,16 @@ class HomeController  extends ChangeNotifier {
   String? userIamge;
   bool isLoading = false;
   List<TaskModel> tasks = [];
-  int totalTacks = 0;
-  int totalDaneTasks = 0;
+  int totalTasks = 0;
+  int totalDoneTasks = 0;
   double precent = 0;
 
   void init() {
-    getFullName();
+    getUserData();
     getTasks();
   }
 
-  Future<void> getFullName() async {
+  Future<void> getUserData() async {
    
       fullName = PreferenceManager().getString(StorageKey.userName) ?? 'Guest';
       userIamge = PreferenceManager().getString(StorageKey.userImage);
@@ -54,9 +54,9 @@ class HomeController  extends ChangeNotifier {
   }
 
   void calcPractage() {
-    totalTacks = tasks.length;
-    totalDaneTasks = tasks.where((e) => e.isCompleted).length;
-    precent = totalTacks == 0 ? 0 : totalDaneTasks / totalTacks;
+    totalTasks = tasks.length;
+    totalDoneTasks = tasks.where((e) => e.isCompleted).length;
+    precent = totalTasks == 0 ? 0 : totalDoneTasks / totalTasks;
     notifyListeners();
   }
 
