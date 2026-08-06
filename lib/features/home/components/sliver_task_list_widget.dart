@@ -49,7 +49,7 @@ class SliverTaskListWidget extends StatelessWidget {
                   },
                   model: controller.tasks[index],
                   onChanged: (value) {
-                    controller.doneTask(value,index);
+                    controller.doneTask(value,controller.tasks[index].id);
                   },
                 );
               },

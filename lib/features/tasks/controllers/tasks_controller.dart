@@ -1,5 +1,3 @@
-
-
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -13,12 +11,12 @@ class TasksController extends ChangeNotifier {
   List<TaskModel> tasks = [];
   List<TaskModel> completeTasks = [];
   List<TaskModel> todoTasks = [];
-   List<TaskModel> highPriorityTasks = [];
-    int totalTasks = 0;
+  List<TaskModel> highPriorityTasks = [];
+  int totalTasks = 0;
   int totalDoneTasks = 0;
   double precent = 0;
 
- void init() {
+  void init() {
     _loadTasks();
   }
 
@@ -29,13 +27,12 @@ class TasksController extends ChangeNotifier {
     if (finalTask != null) {
       final taskAfterDecode = jsonDecode(finalTask) as List<dynamic>;
 
-      tasks = taskAfterDecode.map((element) => TaskModel.fromJson(element)).toList();
-      todoTasks = tasks.where((element) => !element.isCompleted).toList();
-      completeTasks = tasks.where((element) => element.isCompleted).toList();
-      highPriorityTasks = highPriorityTasks
-            .where((taskJson) => taskJson.isHighPriority)
-            .toList();
-      calcPractage();
+      tasks = taskAfterDecode
+          .map((element) => TaskModel.fromJson(element))
+          .toList();
+
+      _loadDta();
+      _calcPractage();
     }
 
     isLoading = false;
@@ -43,73 +40,53 @@ class TasksController extends ChangeNotifier {
     notifyListeners();
   }
 
-   void doneTask(bool? value, int? index) async {
-    if (index == null) return;
+  void _loadDta() {
+    todoTasks = tasks.where((element) => !element.isCompleted).toList();
+    completeTasks = tasks.where((element) => element.isCompleted).toList();
+    highPriorityTasks = highPriorityTasks
+        .where((taskJson) => taskJson.isHighPriority)
+        .toList();
+    highPriorityTasks = highPriorityTasks.reversed.toList();
+  }
+
+  void doneTask(bool? value, int id) async {
+  //final TaskModel model =   tasks.firstWhere((element) =>element.id == id );
+    final index = tasks.indexWhere((e)=> e.id == id);
     tasks[index].isCompleted = value ?? false;
-     calcPractage();
+    _loadDta();
+    _calcPractage();
 
     final upDateTaks = tasks.map((element) => element.toMap()).toList();
 
-    await PreferenceManager().setString(StorageKey.tasks, jsonEncode(upDateTaks));
-    _loadTasks();
-  }
-
-  void doneToDoTask(bool? value, int? index) async {
-    if (index == null) return;
-    todoTasks[index].isCompleted = value ?? false;
-     calcPractage();
-    final int newIndex = tasks.indexWhere((e) => e.id == todoTasks[index].id);
-    tasks[newIndex] = todoTasks[index];
-
-    await PreferenceManager().setString(StorageKey.tasks, jsonEncode(tasks));
-    _loadTasks();
-  }
-
-  void doneCompleteTask(bool? value, int? index) async {
-    if (index == null) return;
-    completeTasks[index].isCompleted = value ?? false;
-
-    final int newIndex = tasks.indexWhere((e) => e.id == completeTasks[index].id);
-    tasks[newIndex] = completeTasks[index];
-
-    await PreferenceManager().setString(StorageKey.tasks, jsonEncode(tasks));
+    await PreferenceManager().setString(
+      StorageKey.tasks,
+      jsonEncode(upDateTaks),
+    );
     _loadTasks();
   }
 
 
 
-
-   void doneHighPriorityTask(bool? value, int? index) async {
-    if (index == null) return;
-    highPriorityTasks[index].isCompleted = value ?? false;
-
-    final int newIndex = tasks.indexWhere((e) => e.id == highPriorityTasks[index].id);
-    tasks[newIndex] = highPriorityTasks[index];
-
-    await PreferenceManager().setString(StorageKey.tasks, jsonEncode(tasks));
-    _loadTasks();
-   }
-
-
-   void  deleteTask(int? id) async {
+  void deleteTask(int? id) async {
     if (id == null) return;
 
     tasks.removeWhere((e) => e.id == id);
-    todoTasks.removeWhere((task) => task.id == id);
-    completeTasks.removeWhere((task) => task.id == id);
-    highPriorityTasks.removeWhere((task) => task.id == id);
+    _loadDta();
+    _calcPractage();
 
     final updatedTask = tasks.map((element) => element.toMap()).toList();
-    await PreferenceManager().setString(StorageKey.tasks, jsonEncode(updatedTask));
+    await PreferenceManager().setString(
+      StorageKey.tasks,
+      jsonEncode(updatedTask),
+    );
 
     notifyListeners();
   }
 
-   void calcPractage() {
+  void _calcPractage() {
     totalTasks = tasks.length;
     totalDoneTasks = tasks.where((e) => e.isCompleted).length;
     precent = totalTasks == 0 ? 0 : totalDoneTasks / totalTasks;
     notifyListeners();
   }
-   
 }

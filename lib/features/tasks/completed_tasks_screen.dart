@@ -8,40 +8,40 @@ class CompletedTasksScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = context.read<TasksController>();
-   return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(18.0),
-              child: Text(
-                'Completed Tasks',
-                style: Theme.of(context).textTheme.labelSmall,
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: controller.isLoading
-                    ? Center(
-                        child: CircularProgressIndicator(
-                          color: Color(0xff15B86C),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(18.0),
+          child: Text(
+            'Completed Tasks',
+            style: Theme.of(context).textTheme.labelSmall,
+          ),
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: controller.isLoading
+                ? Center(
+                    child: CircularProgressIndicator(color: Color(0xff15B86C)),
+                  )
+                : Consumer<TasksController>(
+                    builder: (context, valueController, child) {
+                      return TaskListWidget(
+                        onEdit: () => controller.init(),
+                        onDelete: (id) => controller.deleteTask(id),
+                        emptyMassage: 'No Tasks Found',
+                        tasks: valueController.completeTasks,
+                        onTap: (value, index) => controller.doneTask(
+                          value,
+                          valueController.completeTasks[index!].id,
                         ),
-                      )
-                    : Consumer<TasksController>(
-                        builder: (context, value, child) {
-                          return TaskListWidget(
-                            onEdit: () => controller.init(),
-                            onDelete: (id) => controller.deleteTask(id),
-                            emptyMassage: 'No Tasks Found',
-                            tasks: value.completeTasks,
-                            onTap: (value, index) =>
-                                controller.doneCompleteTask(value, index),
-                          );
-                        },
-                      ),
-              ),
-            ),
-          ],
-        );
+                      );
+                    },
+                  ),
+          ),
+        ),
+      ],
+    );
   }
 }

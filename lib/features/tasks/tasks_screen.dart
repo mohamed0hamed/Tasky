@@ -29,14 +29,14 @@ class TasksScreen extends StatelessWidget {
                         ),
                       )
                     : Consumer<TasksController>(
-                        builder: (context, value, child) {
+                        builder: (context, valueController, child) {
                           return TaskListWidget(
-                            tasks: value.todoTasks,
-                            onEdit: () => controller.init,
+                            tasks: valueController.todoTasks,
+                            onEdit: () => controller.init(),
                             onDelete: (id) => controller.deleteTask(id),
                             emptyMassage: 'No Tasks Found',
                             onTap: (value, index) async {
-                              controller.doneToDoTask(value, index);
+                              controller.doneTask(value, valueController.todoTasks[index!].id);
                             },
                           );
                         },
