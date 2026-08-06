@@ -2,15 +2,15 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tasky_app/features/home/home_controller.dart';
+import 'package:tasky_app/features/tasks/controllers/tasks_controller.dart';
 
 class ArchievedTaskWidget extends StatelessWidget {
   const ArchievedTaskWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return   Consumer<HomeController>(
-      builder: (context, value, child)
+    return   Consumer<TasksController>(
+      builder: (context, controller, child)
       {
          return Container(
                   padding: EdgeInsets.all(16),
@@ -31,7 +31,7 @@ class ArchievedTaskWidget extends StatelessWidget {
                           ),
                           SizedBox(height: 4),
                           Text(
-                            "${value.totalDoneTasks} Out of ${value.totalTasks} Done",
+                            "${controller.totalDoneTasks} Out of ${controller.totalTasks} Done",
                             style: Theme.of(context).textTheme.titleSmall
                           ),
                         ],
@@ -46,7 +46,7 @@ class ArchievedTaskWidget extends StatelessWidget {
                               height: 48,
                               width: 48,
                               child: CircularProgressIndicator(
-                                value: value.precent,
+                                value: controller.precent,
                                 valueColor: AlwaysStoppedAnimation(
                                   Color(0xff15B86C),
                                 ),
@@ -57,7 +57,7 @@ class ArchievedTaskWidget extends StatelessWidget {
                           ),
       
                           Text(
-                            "${(value.precent * 100).toInt()}%",
+                            "${(controller.precent * 100).toInt()}%",
                             style: Theme.of(context).textTheme.titleMedium
                           ),
                         ],

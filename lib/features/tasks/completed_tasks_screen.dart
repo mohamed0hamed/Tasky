@@ -7,11 +7,8 @@ class CompletedTasksScreen extends StatelessWidget {
   const CompletedTasksScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => TasksController()..init(),
-      builder: (context, child) {
-        final controller = context.read<TasksController>();
-        return Column(
+    final controller = context.read<TasksController>();
+   return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
@@ -46,7 +43,5 @@ class CompletedTasksScreen extends StatelessWidget {
             ),
           ],
         );
-      },
-    );
   }
 }

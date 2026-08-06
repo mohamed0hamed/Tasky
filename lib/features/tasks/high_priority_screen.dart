@@ -9,11 +9,8 @@ class HighPriorityScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => TasksController()..init(),
-      builder: (context, child) {
-        final controller = context.read<TasksController>();
-        return Scaffold(
+     final controller = context.read<TasksController>();
+    return  Scaffold(
         appBar: AppBar(
           title: Text('High Priority Tasks'),
         ),
@@ -40,8 +37,5 @@ class HighPriorityScreen extends StatelessWidget {
           ),
         ),
       );
-      },
-    
-    ) ;
   }
 }

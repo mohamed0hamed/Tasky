@@ -8,11 +8,8 @@ class TasksScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => TasksController()..init(),
-      builder: (context, child) {
-        final controller = context.read<TasksController>();
-        return Column(
+     final controller = context.read<TasksController>();
+    return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
@@ -39,7 +36,7 @@ class TasksScreen extends StatelessWidget {
                             onDelete: (id) => controller.deleteTask(id),
                             emptyMassage: 'No Tasks Found',
                             onTap: (value, index) async {
-                              controller.doneTask(value, index);
+                              controller.doneToDoTask(value, index);
                             },
                           );
                         },
@@ -48,7 +45,5 @@ class TasksScreen extends StatelessWidget {
             ),
           ],
         );
-      },
-    );
   }
 }

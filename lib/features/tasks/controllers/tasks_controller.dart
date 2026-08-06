@@ -14,6 +14,9 @@ class TasksController extends ChangeNotifier {
   List<TaskModel> completeTasks = [];
   List<TaskModel> todoTasks = [];
    List<TaskModel> highPriorityTasks = [];
+    int totalTasks = 0;
+  int totalDoneTasks = 0;
+  double precent = 0;
 
  void init() {
     _loadTasks();
@@ -32,7 +35,7 @@ class TasksController extends ChangeNotifier {
       highPriorityTasks = highPriorityTasks
             .where((taskJson) => taskJson.isHighPriority)
             .toList();
-      // calculatePercent();
+      calcPractage();
     }
 
     isLoading = false;
@@ -40,10 +43,21 @@ class TasksController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void doneTask(bool? value, int? index) async {
+   void doneTask(bool? value, int? index) async {
+    if (index == null) return;
+    tasks[index].isCompleted = value ?? false;
+     calcPractage();
+
+    final upDateTaks = tasks.map((element) => element.toMap()).toList();
+
+    await PreferenceManager().setString(StorageKey.tasks, jsonEncode(upDateTaks));
+    _loadTasks();
+  }
+
+  void doneToDoTask(bool? value, int? index) async {
     if (index == null) return;
     todoTasks[index].isCompleted = value ?? false;
-
+     calcPractage();
     final int newIndex = tasks.indexWhere((e) => e.id == todoTasks[index].id);
     tasks[newIndex] = todoTasks[index];
 
@@ -88,6 +102,13 @@ class TasksController extends ChangeNotifier {
     final updatedTask = tasks.map((element) => element.toMap()).toList();
     await PreferenceManager().setString(StorageKey.tasks, jsonEncode(updatedTask));
 
+    notifyListeners();
+  }
+
+   void calcPractage() {
+    totalTasks = tasks.length;
+    totalDoneTasks = tasks.where((e) => e.isCompleted).length;
+    precent = totalTasks == 0 ? 0 : totalDoneTasks / totalTasks;
     notifyListeners();
   }
    
